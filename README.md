@@ -22,7 +22,7 @@ todo
 Helps create hybrid iso image with own preseed file. Useful for hands-off installation.
 You can use later that image to create uefi bootable usb stick.
 
-Name of preseed file: ```preseed/my_preseed.cfg```. It may be symlink to another preseed file.
+Name of preseed file: ```bootstrap/my_preseed.cfg```. It may be symlink to another preseed file.
 
 final output:
 ```
