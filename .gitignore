@@ -1,0 +1,6 @@
+*.swp
+*.pyc
+*.box
+*.iso
+*/iso/*
+*/keys/*
