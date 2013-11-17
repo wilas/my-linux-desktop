@@ -21,7 +21,7 @@ todo
 Helps create hybrid iso image with own preseed file. Useful for hands-off installation.
 You can use later that image to create uefi bootable usb stick.
 
-Name of preseed file: preseed/my_preseed.cfg. It may be symlink to another preseed file.
+Name of preseed file: ```preseed/my_preseed.cfg```. It may be symlink to another preseed file.
 
 final output:
 ```
@@ -36,5 +36,6 @@ in mean time it creates:
 ```
 
 Note1: I've run this script only on ScientificLinux6, but it should work as well for other GNU/Linux.
+
 Note2: inside script use comments to omit some steps - e.g. if you want only update preseed file (from previous build),
 then comment everything, but deploy_custom_initrd and build_uefi_hybrid
