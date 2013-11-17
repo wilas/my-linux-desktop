@@ -1,6 +1,7 @@
 # Description
 
-Simple bash scripts to build quickly various custom iso images. Tested now only with debian iso.
+Simple bash scripts to build quickly custom iso images with own preseed file. Tested now only with debian7.
+Not yet ready to work with RHEL and RHEL derivatives.
 
 # Getting Started
 

@@ -34,6 +34,7 @@ boot_file_src="http://cdimage.debian.org/cdimage/unofficial/non-free/cd-includin
 boot_file="firmware-7.2.0-amd64-netinst.iso"
 boot_file_src_checksum="74a675e7ed4a31c5f95c9fc21f63a5e60cc7ed607055773ffb9605e55c4de4cb"
 boot_file_checksum_type="sha256"
+bootstrap_cfg="bootstrap/my_preseed.cfg"
 # name for the new image
 output_image="${boot_file_src_path}/custom-debian-7.2.0-amd64-firmware-uefi.iso"
 output_image_volid="Custom-debian-7.2.0-amd64"
@@ -99,7 +100,7 @@ function deploy_custom_initrd {
     # add preseed file to initrd and pack it
     pushd "${INITRD_DIR}"
         rm -f "../initrd.gz.custom"
-        cp -H "../preseed/my_preseed.cfg" "preseed.cfg"
+        cp -H "../${bootstrap_cfg}" "preseed.cfg"
         find . | cpio -H newc --create --verbose | gzip -9 > "../initrd.gz.custom"
     popd
     # deploy custom initrd
@@ -116,7 +117,6 @@ function build_uefi_hybrid {
         -b isolinux/isolinux.bin \
         -c isolinux/boot.cat \
         -no-emul-boot \
-        -partition_offset 16 \
         -boot-load-size 4 \
         -boot-info-table \
         -isohybrid-mbr "${boot_file_src_path}/${boot_file}" \
@@ -125,7 +125,8 @@ function build_uefi_hybrid {
         -no-emul-boot \
         -o "${output_image}" \
         "${BUILD_DIR}"
-    # Note: some alternative options:
+    # Note: some extra/alternative options:
+    #-partition_offset 16 \
     #-r -J -joliet-long -cache-inodes \
     #-isohybrid-mbr "/usr/lib/syslinux/isohdpfx.bin" \
     #-isohybrid-mbr "/usr/share/syslinux/isohdpfx.bin" \
