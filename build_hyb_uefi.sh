@@ -83,6 +83,19 @@ function prepare_iso_build {
     rm -rf "${tmp_isomount}"
 }
 
+# deploy_custom_bootstrap_cfg - this was tested and doesn't work as hands off install with UEFI
+#function deploy_custom_bootstrap_cfg {
+#    cp -H "${bootstrap_cfg}" "${BUILD_DIR}/my_preseed.cfg"
+#    if ! grep -qw "my_preseed.cfg" "${BUILD_DIR}/isolinux/txt.cfg"; then
+#        chmod 644 "${BUILD_DIR}/isolinux/txt.cfg"
+#        sed -r -i "s/(append)/\1 preseed\/file=\/cdrom\/my_preseed.cfg auto=true priority=critical hostname=myhost domain=lan/" \
+#        "${BUILD_DIR}/isolinux/txt.cfg"
+#    fi
+#    pushd "${BUILD_DIR}"
+#        md5sum $(find -type f) > md5sum.txt
+#    popd
+#}
+
 function prepare_initrd_build {
     if [[ -d ${INITRD_DIR} ]]; then
         # nothing to do
