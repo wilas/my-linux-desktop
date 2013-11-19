@@ -106,7 +106,7 @@ function deploy_custom_initrd {
     # deploy custom initrd
     cp "initrd.gz.custom" "${BUILD_DIR}/${initrd_file}"
     ls -la "${BUILD_DIR}/${initrd_file}"
-    # update md5sum.txt file
+    # update md5sum.txt file - this is a good practice, not a must have
     pushd "${BUILD_DIR}"
         md5sum $(find -type f) > md5sum.txt
     popd
