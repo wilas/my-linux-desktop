@@ -34,12 +34,16 @@ boot_file_src="http://cdimage.debian.org/cdimage/unofficial/non-free/cd-includin
 boot_file="firmware-7.2.0-amd64-netinst.iso"
 boot_file_src_checksum="74a675e7ed4a31c5f95c9fc21f63a5e60cc7ed607055773ffb9605e55c4de4cb"
 boot_file_checksum_type="sha256"
-bootstrap_cfg="bootstrap/my_preseed.cfg"
+# destination bootstrap file (kickstart, preseed) - this is relative path to build_iso_dir
+bootstrap_cfg="my_preseed.cfg"
+bootstrap_cfg_src="bootstrap/my_preseed.cfg"
 # name for the new image
-output_image="${boot_file_src_path}/custom-debian-7.2.0-amd64-firmware-bios.iso"
+output_image="${boot_file_src_path}/custom-debian-7.2.0-amd64-firmware-mbr.iso"
 output_image_volid="Custom-debian-7.2.0-amd64"
 # where build custom image
-BUILD_DIR="debian-iso-build"
+build_iso_dir="debian-iso-build"
+# remove build directories after build (or during error build); 1 mean yes
+clean_up_build=1
 
 # functions
 function download_iso {
@@ -65,36 +69,35 @@ function download_iso {
 }
 
 function prepare_iso_build {
-    if [[ -d ${BUILD_DIR} ]]; then
+    if [[ -d ${build_iso_dir} ]]; then
         # nothing to do
-        printf "[INFO] ${BUILD_DIR} already exists.\n"
+        printf "[INFO] ${build_iso_dir} already exists.\n"
         return 0
     fi
     # create tmp directory for iso mount
     tmp_isomount=$(TMPDIR=. mktemp -d)
-    mkdir -p "${BUILD_DIR}"
+    mkdir -p "${build_iso_dir}"
     mount -o loop "${boot_file_src_path}/${boot_file}" "${tmp_isomount}"
-    rsync -v -a -H "${tmp_isomount}/" "${BUILD_DIR}/"
+    rsync -v -a -H "${tmp_isomount}/" "${build_iso_dir}/"
     umount "${tmp_isomount}"
     rm -rf "${tmp_isomount}"
 }
 
 function deploy_custom_bootstrap_cfg {
-    cp -H "${bootstrap_cfg}" "${BUILD_DIR}/my_preseed.cfg"
-    if ! grep -qw "my_preseed.cfg" "${BUILD_DIR}/isolinux/txt.cfg"; then
-        chmod 644 "${BUILD_DIR}/isolinux/txt.cfg"
-        sed -r -i "s/(append)/\1 preseed\/file=\/cdrom\/my_preseed.cfg auto=true priority=critical/" \
-        "${BUILD_DIR}/isolinux/txt.cfg"
+    cp -H "${bootstrap_cfg_src}" "${build_iso_dir}/${bootstrap_cfg}"
+    if ! grep -qw "${bootstrap_cfg}" "${build_iso_dir}/isolinux/txt.cfg"; then
+        chmod 644 "${build_iso_dir}/isolinux/txt.cfg"
+        sed -r -i "s/(append)/\1 preseed\/file=\/cdrom\/${bootstrap_cfg} auto=true priority=critical/" \
+        "${build_iso_dir}/isolinux/txt.cfg"
     fi
     # update md5sum.txt file - this is a good practice, not a must have
-    pushd "${BUILD_DIR}"
+    pushd "${build_iso_dir}"
         md5sum $(find -type f) > md5sum.txt
     popd
 }
 
 function build_mbr_hybrid {
     printf "[INFO] Making ${output_image} hybrid ISO image...\n"
-    #xorriso -indev "${boot_file_src_path}/${boot_file}" 2>&1 | grep "Volume id"
     xorriso -as mkisofs \
         -r -J \
         -V "${output_image_volid}" \
@@ -105,35 +108,55 @@ function build_mbr_hybrid {
         -boot-info-table \
         -isohybrid-mbr "${boot_file_src_path}/${boot_file}" \
         -o "${output_image}" \
-        "${BUILD_DIR}"
-    # Note: some extra/alternative options:
-    #-partition_offset 16 \
-    #-r -J -joliet-long -cache-inodes \
-    #-isohybrid-mbr "/usr/lib/syslinux/isohdpfx.bin" \
-    #-isohybrid-mbr "/usr/share/syslinux/isohdpfx.bin" \
-}
-
-function quazi_clean {
-    # ugly clean up
-    rm -rf "${BUILD_DIR}"
+        "${build_iso_dir}"
 }
 
 function clean_up {
-    printf "Not implemented yet.\n"
+    if [[ ${clean_up_build} -eq 0 ]]; then
+        return 0
+    fi
+    if [[ -d "${build_iso_dir}" ]]; then
+        rm -rf "${build_iso_dir}"
+    fi
+    if [[ -d "${tmp_isomount}" ]]; then
+        rm -rf "${tmp_isomount}"
+    fi
+}
+
+function signal_clean_up {
+    printf "[INFO] Signal/Error handler - cleanup before exiting...\n"
+    clean_up
     exit 1
 }
 
 function dependencies_check {
-    printf "Not implemented yet.\n"
-    exit 1
+    local dependencies=(
+        "curl:curl"
+        "xorriso:xorriso"
+        "rsync:rsync"
+        "openssl:openssl"
+        "md5sum:coreutils"
+    )
+    for depend in "${dependencies[@]}"; do
+        local dep_cmd="${depend%%:*}"
+        local dep_name="${depend##*:}"
+        # check whether dep_name is installed - dep_cmd command exist
+        if ! command -v $dep_cmd >/dev/null 2>&1; then
+            printf "[ERROR] '${dep_cmd}' command doesn't exist - install '${dep_name}' to continue.\n"
+            exit 1
+        fi
+    done
 }
 
 
 # MAIN
+# check whether we have everything to start with script
+dependencies_check
+# signals and error handler
+trap signal_clean_up SIGHUP SIGINT SIGTERM ERR
+
 download_iso
 prepare_iso_build
 deploy_custom_bootstrap_cfg
 build_mbr_hybrid
-quazi_clean
-
-#trap clean_up SIGHUP SIGINT SIGTERM ERR
+clean_up
