@@ -38,7 +38,7 @@ boot_file_checksum_type="sha256"
 bootstrap_cfg="my_preseed.cfg"
 bootstrap_cfg_src="bootstrap/my_preseed.cfg"
 # name for the new image
-output_image="${boot_file_src_path}/custom-debian-7.2.0-amd64-firmware-mbr.iso"
+output_image="${boot_file_src_path}/custom-debian-7.2.0-amd64-firmware-bios.iso"
 output_image_volid="Custom-debian-7.2.0-amd64"
 # where build custom image
 build_iso_dir="debian-iso-build"
