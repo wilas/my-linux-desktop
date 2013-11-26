@@ -34,16 +34,31 @@ boot_file_src="http://cdimage.debian.org/cdimage/unofficial/non-free/cd-includin
 boot_file="firmware-7.2.0-amd64-netinst.iso"
 boot_file_src_checksum="74a675e7ed4a31c5f95c9fc21f63a5e60cc7ed607055773ffb9605e55c4de4cb"
 boot_file_checksum_type="sha256"
-# destination bootstrap file (kickstart, preseed) - this is relative path to build_iso_dir
-bootstrap_cfg="my_preseed.cfg"
+os_type="debian"
 bootstrap_cfg_src="bootstrap/my_preseed.cfg"
 # name for the new image
 output_image="${boot_file_src_path}/custom-debian-7.2.0-amd64-firmware-bios.iso"
 output_image_volid="Custom-debian-7.2.0-amd64"
-# where build custom image
-build_iso_dir="debian-iso-build"
 # remove build directories after build (or during error build); 1 mean yes
 clean_up_build=1
+
+
+# where build custom image
+build_iso_dir="${os_type}-iso-build"
+# lowercase os_type and OS specific configurations
+os_type=$(printf "${os_type}" | tr '[:upper:]' '[:lower:]')
+case "${os_type}" in
+    "debian")
+        # destination bootstrap file (kickstart/preseed) - this is relative path to build_iso_dir
+        bootstrap_cfg="preseed.cfg"
+        boot_options="preseed\/file=\/cdrom\/${bootstrap_cfg} auto=true priority=critical"
+        boot_menu_cfg="${build_iso_dir}/isolinux/txt.cfg"
+        ;;
+    *)
+        printf "[ERROR] '${os_type}' is not supported.\n"
+        exit 1
+        ;;
+esac
 
 # functions
 function download_iso {
@@ -85,10 +100,9 @@ function prepare_iso_build {
 
 function deploy_custom_bootstrap_cfg {
     cp -H "${bootstrap_cfg_src}" "${build_iso_dir}/${bootstrap_cfg}"
-    if ! grep -qw "${bootstrap_cfg}" "${build_iso_dir}/isolinux/txt.cfg"; then
-        chmod 644 "${build_iso_dir}/isolinux/txt.cfg"
-        sed -r -i "s/(append)/\1 preseed\/file=\/cdrom\/${bootstrap_cfg} auto=true priority=critical/" \
-        "${build_iso_dir}/isolinux/txt.cfg"
+    if ! grep -qw "${boot_options}" "${boot_menu_cfg}"; then
+        chmod 644 "${boot_menu_cfg}"
+        sed -r -i "s/(append)/\1 ${boot_options}/" "${boot_menu_cfg}"
     fi
     # update md5sum.txt file - this is a good practice, not a must have
     pushd "${build_iso_dir}"
@@ -136,6 +150,7 @@ function dependencies_check {
         "rsync:rsync"
         "openssl:openssl"
         "md5sum:coreutils"
+        "tr:coreutils"
     )
     for depend in "${dependencies[@]}"; do
         local dep_cmd="${depend%%:*}"

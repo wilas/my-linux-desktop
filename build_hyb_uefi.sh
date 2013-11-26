@@ -34,23 +34,35 @@ boot_file_src="http://cdimage.debian.org/cdimage/unofficial/non-free/cd-includin
 boot_file="firmware-7.2.0-amd64-netinst.iso"
 boot_file_src_checksum="74a675e7ed4a31c5f95c9fc21f63a5e60cc7ed607055773ffb9605e55c4de4cb"
 boot_file_checksum_type="sha256"
-# destination bootstrap file (kickstart, preseed) - this is relative path to build_initrd_dir
-bootstrap_cfg="preseed.cfg"
+os_type="debian"
 bootstrap_cfg_src="bootstrap/my_preseed.cfg"
-# orig. efi image - this is relative path to build_iso_dir
-boot_efi="boot/grub/efi.img"
-
 # name for the new image
 output_image="${boot_file_src_path}/custom-debian-7.2.0-amd64-firmware-uefi.iso"
 output_image_volid="Custom-debian-7.2.0-amd64"
 # orig. initrd file - this is relative path to build_iso_dir
 initrd_file="install.amd/initrd.gz"
-# where build custom initrd
-build_initrd_dir="debian-initrd-build"
-# where build custom image
-build_iso_dir="debian-iso-build"
 # remove build directories after build (or during error build); 1 mean yes
 clean_up_build=1
+
+
+# where build custom initrd
+build_initrd_dir="${os_type}-initrd-build"
+# where build custom image
+build_iso_dir="${os_type}-iso-build"
+# lowercase os_type and OS specific configurations
+os_type=$(printf "${os_type}" | tr '[:upper:]' '[:lower:]')
+case "${os_type}" in
+    "debian")
+        # destination bootstrap file (kickstart/preseed) - this is relative path to build_initrd_dir
+        bootstrap_cfg="preseed.cfg"
+        # orig. efi image - this is relative path to build_iso_dir
+        boot_efi="boot/grub/efi.img"
+        ;;
+    *)
+        printf "[ERROR] '${os_type}' is not supported.\n"
+        exit 1
+        ;;
+esac
 
 # functions
 function download_iso {
@@ -170,6 +182,7 @@ function dependencies_check {
         "cpio:cpio"
         "openssl:openssl"
         "md5sum:coreutils"
+        "tr:coreutils"
     )
     for depend in "${dependencies[@]}"; do
         local dep_cmd="${depend%%:*}"
