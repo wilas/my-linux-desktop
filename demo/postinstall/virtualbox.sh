@@ -3,6 +3,13 @@ set -e -E -u -o pipefail; shopt -s failglob;
 
 VBOX_VERSION="4.3.2"
 
+# uninstall the default Virtualbox Guest Additions
+service virtualbox-guest-utils stop
+apt-get -y purge virtualbox-ose-guest-x11
+apt-get -y purge virtualbox-guest-utils
+apt-get -y install dkms
+apt-get -y autoremove
+
 # Do we have any virtualbox guest additions installed ?
 if VBoxControl --version >/dev/null 2>&1; then
     version=$(VBoxControl --version | cut -f 1 -d"r") # 4.2.12r84980 -> 4.2.12
