@@ -23,7 +23,7 @@
 # THE SOFTWARE.
 #
 
-# Helps build usb stick with persistence form live-iso
+# Helps build usb stick with persistence from live-iso
 
 # secure bash
 set -e -E -u -o pipefail; shopt -s failglob;
