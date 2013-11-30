@@ -168,6 +168,9 @@ function clean_up {
         rm -rf "initrd.gz.custom"
     fi
     if [[ -d "${tmp_isomount}" ]]; then
+        if mount | grep -qw "${tmp_isomount}"; then
+            umount "${tmp_isomount}"
+        fi
         rm -rf "${tmp_isomount}"
     fi
 }

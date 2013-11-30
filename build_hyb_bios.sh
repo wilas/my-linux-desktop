@@ -133,11 +133,13 @@ function clean_up {
     if [[ ${clean_up_build} -eq 0 ]]; then
         return 0
     fi
-    # unmounted or not ?
     if [[ -d "${build_iso_dir}" ]]; then
         rm -rf "${build_iso_dir}"
     fi
     if [[ -d "${tmp_isomount}" ]]; then
+        if mount | grep -qw "${tmp_isomount}"; then
+            umount "${tmp_isomount}"
+        fi
         rm -rf "${tmp_isomount}"
     fi
 }
