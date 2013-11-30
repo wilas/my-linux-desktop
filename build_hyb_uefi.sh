@@ -45,6 +45,8 @@ initrd_file="install.amd/initrd.gz"
 clean_up_build=1
 
 
+# check whether tmp_isomount variable exist - useful when some part of code are commented or clean_up_build=0
+tmp_isomount_var=0
 # where build custom initrd
 build_initrd_dir="${os_type}-initrd-build"
 # where build custom image
@@ -95,6 +97,7 @@ function prepare_iso_build {
     fi
     # create tmp directory for iso mount
     tmp_isomount=$(TMPDIR=. mktemp -d)
+    tmp_isomount_var=1
     mkdir -p "${build_iso_dir}"
     mount -o loop "${boot_file_src_path}/${boot_file}" "${tmp_isomount}"
     rsync -v -a -H "${tmp_isomount}/" "${build_iso_dir}/"
@@ -127,7 +130,7 @@ function deploy_custom_initrd {
     ls -la "${build_iso_dir}/${initrd_file}"
     # update md5sum.txt file - this is a good practice, not a must have
     pushd "${build_iso_dir}"
-        md5sum $(find -type f) > md5sum.txt
+        find -type f -exec md5sum {} \; > md5sum.txt
     popd
 }
 
@@ -162,8 +165,10 @@ function clean_up {
     if [[ -f "initrd.gz.custom" ]]; then
         rm -rf "initrd.gz.custom"
     fi
-    if [[ -d "${tmp_isomount}" ]]; then
-        rm -rf "${tmp_isomount}"
+    if [[ ${tmp_isomount_var} -eq 1 ]]; then
+        if [[ -d "${tmp_isomount}" ]]; then
+            rm -rf "${tmp_isomount}"
+        fi
     fi
 }
 

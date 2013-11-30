@@ -43,6 +43,8 @@ output_image_volid="Custom-debian-7.2.0-amd64"
 clean_up_build=1
 
 
+# check whether tmp_isomount variable exist - useful when some part of code are commented or clean_up_build=0
+tmp_isomount_var=0
 # where build custom image
 build_iso_dir="${os_type}-iso-build"
 # lowercase os_type and OS specific configurations
@@ -91,6 +93,7 @@ function prepare_iso_build {
     fi
     # create tmp directory for iso mount
     tmp_isomount=$(TMPDIR=. mktemp -d)
+    tmp_isomount_var=1
     mkdir -p "${build_iso_dir}"
     mount -o loop "${boot_file_src_path}/${boot_file}" "${tmp_isomount}"
     rsync -v -a -H "${tmp_isomount}/" "${build_iso_dir}/"
@@ -106,7 +109,7 @@ function deploy_custom_bootstrap_cfg {
     fi
     # update md5sum.txt file - this is a good practice, not a must have
     pushd "${build_iso_dir}"
-        md5sum $(find -type f) > md5sum.txt
+        find -type f -exec md5sum {} \; > md5sum.txt
     popd
 }
 
@@ -132,8 +135,10 @@ function clean_up {
     if [[ -d "${build_iso_dir}" ]]; then
         rm -rf "${build_iso_dir}"
     fi
-    if [[ -d "${tmp_isomount}" ]]; then
-        rm -rf "${tmp_isomount}"
+    if [[ ${tmp_isomount_var} -eq 1 ]]; then
+        if [[ -d "${tmp_isomount}" ]]; then
+            rm -rf "${tmp_isomount}"
+        fi
     fi
 }
 
