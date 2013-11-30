@@ -45,8 +45,8 @@ initrd_file="install.amd/initrd.gz"
 clean_up_build=1
 
 
-# check whether tmp_isomount variable exist - useful when some part of code are commented or clean_up_build=0
-tmp_isomount_var=0
+# useful when some part of code are commented or clean_up_build=0
+tmp_isomount=""
 # where build custom initrd
 build_initrd_dir="${os_type}-initrd-build"
 # where build custom image
@@ -97,9 +97,10 @@ function prepare_iso_build {
     fi
     # create tmp directory for iso mount
     tmp_isomount=$(TMPDIR=. mktemp -d)
-    tmp_isomount_var=1
     mkdir -p "${build_iso_dir}"
     mount -o loop "${boot_file_src_path}/${boot_file}" "${tmp_isomount}"
+    # Why not 7z and extract iso to build_iso_dir ?
+    # because 7z has problem with symlinks (v9.20)
     rsync -v -a -H "${tmp_isomount}/" "${build_iso_dir}/"
     umount "${tmp_isomount}"
     rm -rf "${tmp_isomount}"
@@ -156,6 +157,7 @@ function clean_up {
     if [[ ${clean_up_build} -eq 0 ]]; then
         return 0
     fi
+    # unmounted or not ?
     if [[ -d "${build_iso_dir}" ]]; then
         rm -rf "${build_iso_dir}"
     fi
@@ -165,10 +167,8 @@ function clean_up {
     if [[ -f "initrd.gz.custom" ]]; then
         rm -rf "initrd.gz.custom"
     fi
-    if [[ ${tmp_isomount_var} -eq 1 ]]; then
-        if [[ -d "${tmp_isomount}" ]]; then
-            rm -rf "${tmp_isomount}"
-        fi
+    if [[ -d "${tmp_isomount}" ]]; then
+        rm -rf "${tmp_isomount}"
     fi
 }
 
