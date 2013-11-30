@@ -23,7 +23,7 @@
 # THE SOFTWARE.
 #
 
-# Helps build custom hybrid mbr iso image
+# Helps build usb stick with persistence form live-iso
 
 # secure bash
 set -e -E -u -o pipefail; shopt -s failglob;
