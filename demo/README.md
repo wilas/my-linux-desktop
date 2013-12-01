@@ -1,6 +1,6 @@
 # Description
 
-Build Virtualbox demo using already created custom ISO - demo as [vbkick](https://github.com/wilas/vbkick) definition.
+Build Virtualbox demo using already created custom ISOs. Demo as [vbkick](https://github.com/wilas/vbkick) definition.
 
 # Howto
 

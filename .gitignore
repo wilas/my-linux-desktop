@@ -2,5 +2,6 @@
 *.pyc
 *.box
 *.iso
+iso/*
 */iso/*
 */keys/*
