@@ -28,23 +28,23 @@
 # secure bash
 set -e -E -u -o pipefail; shopt -s failglob;
 
-# Global settings
+# Custom settings
 boot_file_src_path="iso"
 boot_file_src="http://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/7.2.0/amd64/iso-cd/firmware-7.2.0-amd64-netinst.iso"
 boot_file="firmware-7.2.0-amd64-netinst.iso"
 boot_file_src_checksum="74a675e7ed4a31c5f95c9fc21f63a5e60cc7ed607055773ffb9605e55c4de4cb"
 boot_file_checksum_type="sha256"
 os_type="debian"
+os_arch="amd64"
 bootstrap_cfg_src="bootstrap/my_preseed.cfg"
 # name for the new image
 output_image="${boot_file_src_path}/custom-debian-7.2.0-amd64-firmware-uefi.iso"
 output_image_volid="Custom-debian-7.2.0-amd64"
-# orig. initrd file - this is relative path to build_iso_dir
-initrd_file="install.amd/initrd.gz"
 # remove build directories after build (or during error build); 1 mean yes
 clean_up_build=1
 
 
+# Global settings
 # useful when some part of code are commented or clean_up_build=0
 tmp_isomount=""
 # where build custom initrd
@@ -53,12 +53,21 @@ build_initrd_dir="${os_type}-initrd-build"
 build_iso_dir="${os_type}-iso-build"
 # lowercase os_type and OS specific configurations
 os_type=$(printf "${os_type}" | tr '[:upper:]' '[:lower:]')
+os_arch=$(printf "${os_arch}" | tr '[:upper:]' '[:lower:]')
 case "${os_type}" in
     "debian")
         # destination bootstrap file (kickstart/preseed) - this is relative path to build_initrd_dir
         bootstrap_cfg="preseed.cfg"
         # orig. efi image - this is relative path to build_iso_dir
         boot_efi="boot/grub/efi.img"
+        if [[ "${os_arch}" =~ ^amd$|^amd64$|^x86_64$ ]]; then
+            initrd_file="install.amd/initrd.gz"
+        elif [[ "${os_arch}" =~ ^i386$|^i686$|^x86$ ]]; then
+            initrd_file="install.386/initrd.gz"
+        else
+            printf "[ERROR] Unknow os_arch='${os_arch}'. Terminating...\n"
+            exit 1
+        fi
         ;;
     *)
         printf "[ERROR] '${os_type}' is not supported.\n"

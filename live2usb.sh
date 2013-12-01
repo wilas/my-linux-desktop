@@ -28,7 +28,7 @@
 # secure bash
 set -e -E -u -o pipefail; shopt -s failglob;
 
-# Global settings
+# Custom settings
 boot_file_src_path="iso"
 boot_file_src="http://cdimage.debian.org/cdimage/release/7.2.0-live/amd64/iso-hybrid/debian-live-7.2-amd64-xfce-desktop.iso"
 boot_file="debian-live-7.2-amd64-xfce-desktop.iso"
@@ -39,6 +39,7 @@ os_type="debian7"
 clean_up_build=1
 
 
+# Global settings
 # where build usb live partition
 build_live_dir="build-live-usb"
 # where build usb persistence partition

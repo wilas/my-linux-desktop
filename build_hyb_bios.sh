@@ -28,7 +28,7 @@
 # secure bash
 set -e -E -u -o pipefail; shopt -s failglob;
 
-# Global settings
+# Custom settings
 boot_file_src_path="iso"
 boot_file_src="http://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/7.2.0/amd64/iso-cd/firmware-7.2.0-amd64-netinst.iso"
 boot_file="firmware-7.2.0-amd64-netinst.iso"
@@ -43,6 +43,7 @@ output_image_volid="Custom-debian-7.2.0-amd64"
 clean_up_build=1
 
 
+# Global settings
 # useful when some part of code are commented or clean_up_build=0
 tmp_isomount=""
 # where build custom image
