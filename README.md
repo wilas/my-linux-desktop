@@ -16,13 +16,13 @@ Note: All data from ```/dev/sdX``` will be removed.
 ## build uefi boot custom usb stick
 ```
     sudo ./build_hyb_uefi.sh
-    sudo dd if=iso/custom-debian-7.2.0-amd64-firmware-uefi.iso of=/dev/sdX bs=4M; sync
+    sudo dd if=iso/custom-debian-7.3.0-amd64-firmware-uefi.iso of=/dev/sdX bs=4M; sync
 ```
 
 ## build legancy bios boot custom usb stick
 ```
     sudo ./build_hyb_bios.sh
-    sudo dd if=iso/custom-debian-7.2.0-amd64-firmware-bios.iso of=/dev/sdX bs=4M; sync
+    sudo dd if=iso/custom-debian-7.3.0-amd64-firmware-bios.iso of=/dev/sdX bs=4M; sync
 ```
 
 ## build usb stick from live-iso
