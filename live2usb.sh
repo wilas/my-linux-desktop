@@ -201,20 +201,23 @@ function dependencies_check {
     done
 }
 
+function main {
+    if [[ $# -ne 1 ]]; then
+        printf "Usage: $0 device (e.g. /dev/sdc)\n"
+        exit 1
+    fi
+    device="${1}"
+
+    # check whether we have everything to start with script
+    dependencies_check
+
+    download_iso
+    check_device
+    umount_device
+    make_persistent_live_usb
+}
 
 # MAIN
-if [[ $# -ne 1 ]]; then
-    printf "Usage: $0 device (e.g. /dev/sdc)\n"
-    exit 1
-fi
-device="${1}"
-
-# check whether we have everything to start with script
-dependencies_check
 # signals and error handler
 trap signal_clean_up SIGHUP SIGINT SIGTERM ERR
-
-download_iso
-check_device
-umount_device
-make_persistent_live_usb
+main

@@ -160,15 +160,18 @@ function dependencies_check {
     done
 }
 
+function main {
+    # check whether we have everything to start with script
+    dependencies_check
+
+    download_iso
+    prepare_iso_build
+    deploy_custom_bootstrap_cfg
+    build_mbr_hybrid
+    clean_up
+}
 
 # MAIN
-# check whether we have everything to start with script
-dependencies_check
 # signals and error handler
 trap signal_clean_up SIGHUP SIGINT SIGTERM ERR
-
-download_iso
-prepare_iso_build
-deploy_custom_bootstrap_cfg
-build_mbr_hybrid
-clean_up
+main

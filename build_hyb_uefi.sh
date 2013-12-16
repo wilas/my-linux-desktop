@@ -200,18 +200,21 @@ function dependencies_check {
     done
 }
 
+function main {
+    # check whether we have everything to start with script
+    dependencies_check
+
+    # use comments to omit some steps - e.g. if you want only update preseed file (from previous build),
+    # then comment everything, but deploy_custom_initrd and build_uefi_hybrid
+    download_iso
+    prepare_iso_build
+    prepare_initrd_build
+    deploy_custom_initrd
+    build_uefi_hybrid
+    clean_up
+}
 
 # MAIN
-# check whether we have everything to start with script
-dependencies_check
 # signals and error handler
 trap signal_clean_up SIGHUP SIGINT SIGTERM ERR
-
-# use comments to omit some steps - e.g. if you want only update preseed file (from previous build),
-# then comment everything, but deploy_custom_initrd and build_uefi_hybrid
-download_iso
-prepare_iso_build
-prepare_initrd_build
-deploy_custom_initrd
-build_uefi_hybrid
-clean_up
+main
