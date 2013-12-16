@@ -30,15 +30,15 @@ set -e -E -u -o pipefail; shopt -s failglob;
 
 # Custom settings
 boot_file_src_path="iso"
-boot_file_src="http://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/7.2.0/amd64/iso-cd/firmware-7.2.0-amd64-netinst.iso"
-boot_file="firmware-7.2.0-amd64-netinst.iso"
-boot_file_src_checksum="74a675e7ed4a31c5f95c9fc21f63a5e60cc7ed607055773ffb9605e55c4de4cb"
+boot_file_src="http://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/7.3.0/amd64/iso-cd/firmware-7.3.0-amd64-netinst.iso"
+boot_file="firmware-7.3.0-amd64-netinst.iso"
+boot_file_src_checksum="dbc0b94ce0e15dd1ca07630b665d50e2a74622092a954cc615be43974d1b4b95"
 boot_file_checksum_type="sha256"
 os_type="debian"
 bootstrap_cfg_src="bootstrap/my_preseed.cfg"
 # name for the new image
-output_image="${boot_file_src_path}/custom-debian-7.2.0-amd64-firmware-bios.iso"
-output_image_volid="Custom-debian-7.2.0-amd64"
+output_image="${boot_file_src_path}/custom-debian-7.3.0-amd64-firmware-bios.iso"
+output_image_volid="Custom-debian-7.3.0-amd64"
 # remove build directories after build (or during error build); 1 mean yes
 clean_up_build=1
 
