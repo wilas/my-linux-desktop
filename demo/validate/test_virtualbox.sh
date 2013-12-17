@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -E -u -o pipefail; shopt -s failglob;
 
-VBOX_VERSION="4.3.2"
+VBOX_VERSION="4.3.4"
 
 # Feature: Virtualbox Guest Additions
 # Given VBoxControl command
