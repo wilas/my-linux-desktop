@@ -220,4 +220,4 @@ function main {
 # MAIN
 # signals and error handler
 trap signal_clean_up SIGHUP SIGINT SIGTERM ERR
-main
+main "$@"
