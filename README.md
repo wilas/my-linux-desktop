@@ -6,8 +6,7 @@ Set of various scripts to build (bootable ISO images and USB sticks):
 
 # Info
 
-Prepared for Debian 7 "Wheezy", but with small customizations
-(options on the begining of scripts) should works for others GNU\Linux as well.
+Prepared for Debian 7 "Wheezy", but with small customizations should works for others GNU\Linux as well.
 
 # Child steps
 
