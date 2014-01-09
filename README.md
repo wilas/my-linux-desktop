@@ -8,6 +8,12 @@ Set of various scripts to build (bootable ISO images and USB sticks):
 
 Prepared for Debian 7 "Wheezy", but with small customizations should works for others GNU\Linux as well.
 
+Users and passwords use in preseed files:
+```
+root: rootme
+myuser: mypass
+```
+
 # Child steps
 
 Note: All data from ```/dev/sdX``` will be removed.
