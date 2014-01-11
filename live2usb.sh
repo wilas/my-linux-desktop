@@ -78,7 +78,7 @@ function download_iso {
 }
 
 function check_device {
-    if ! sgdisk -p "${device}" > /dev/null 2>&1 && ! fdisk -l ${device} > /dev/null 2>&1; then
+    if [[ ! -b "${device}" ]]; then
         printf "[ERROR] '${device}' device not found. Terminating...\n"
         exit 1
     fi
